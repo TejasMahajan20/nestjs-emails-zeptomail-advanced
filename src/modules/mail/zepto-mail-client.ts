@@ -4,7 +4,7 @@ import { SendMailClient } from 'zeptomail';
 @Injectable()
 export class ZeptoMailClient {
     private readonly client: SendMailClient;
-    private readonly logger: Logger = new Logger(ZeptoMailClient.name);
+    private readonly logger = new Logger(ZeptoMailClient.name);
 
     constructor() {
         this.client = new SendMailClient({

@@ -12,7 +12,6 @@ export class AppService {
   }
 
   async sendMail(email: string): Promise<void> {
-    await this.mailService.sendOTP(email, "123456", "Test")
+    await this.mailService.sendOtpEmail(email, "123456", "Test")
   }
-
 }

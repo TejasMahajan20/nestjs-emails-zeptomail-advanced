@@ -1,50 +1,42 @@
 import { Injectable } from '@nestjs/common';
-import { ZeptoMailClient } from './zepto-mail-client';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
+import { EmailJobName } from './enums/email-job-name.enum';
+import { QueueName } from 'src/common/enums/queue-name.enum';
 
 @Injectable()
 export class MailService {
-    constructor(private readonly zeptoMailClient: ZeptoMailClient) { }
+    constructor(
+        @InjectQueue(QueueName.MAIL) private mailQueue: Queue
+    ) { }
 
-    async sendOTP(
-        email: string,
-        OTP: string,
+    async sendOtpEmail(
+        recipient: string,
+        otpValue: string,
         name?: string
-    ) {
-        const templateKey = process.env.ZEPTO_MAIL_OTP_TEMPLATE_KEY;
-        const appName = process.env.APP_NAME;
-
-        const merge_info = {
-            name,
-            OTP,
-            team: appName,
-            product_name: appName
-        };
-
-        const subject = process.env.ZEPTO_MAIL_OTP_EMAIL_SUBJECT;
-
-        await this.zeptoMailClient.sendMail(templateKey, email, merge_info, subject);
+    ): Promise<void> {
+        await this.mailQueue.add(
+            EmailJobName.OTP,
+            {
+                recipient,
+                otpValue,
+                name
+            }
+        );
     }
 
-    async sendVerificationLink(
-        email: string, 
-        passwordSetLink: string, 
+    async sendVerificationLinkEmail(
+        recipient: string,
+        verificationLink: string,
         name?: string
-    ) {
-        const templateKey = process.env.ZEPTO_MAIL_VERIFICATION_LINK_TEMPLATE_KEY;
-        const appName = process.env.APP_NAME;
-
-        const merge_info = {
-            name,
-            password_set_link: passwordSetLink,
-            team: appName,
-            product_name: appName,
-            email
-        };
-
-        const subject = process.env.ZEPTO_MAIL_VERIFICATION_EMAIL_SUBJECT;
-
-        await this.zeptoMailClient.sendMail(templateKey, email, merge_info, subject);
+    ): Promise<void> {
+        await this.mailQueue.add(
+            EmailJobName.VERIFICATION_LINK,
+            {
+                recipient,
+                verificationLink,
+                name
+            }
+        );
     }
-
-
 }
