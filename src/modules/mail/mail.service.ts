@@ -39,4 +39,17 @@ export class MailService {
             }
         );
     }
+
+    async sendWelcomeEmail(
+        recipient: string,
+        name?: string
+    ): Promise<void> {
+        await this.mailQueue.add(
+            EmailJobName.WELCOME_EMAIL,
+            {
+                recipient,
+                name
+            }
+        );
+    }
 }

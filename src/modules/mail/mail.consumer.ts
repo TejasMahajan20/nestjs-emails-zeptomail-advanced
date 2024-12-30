@@ -70,4 +70,23 @@ export class MailConsumer extends WorkerHost {
 
         await this.zeptoMailClient.sendMail(templateKey, email, merge_info, subject);
     }
+
+    async sendWelcomeEmail(
+        email: string,
+        name?: string
+    ) {
+        const templateKey = process.env.ZEPTO_MAIL_WELCOME_EMAIL_TEMPLATE_KEY;
+        const appName = process.env.APP_NAME;
+
+        const merge_info = {
+            name,
+            team: appName,
+            product_name: appName,
+            email
+        };
+
+        const subject = process.env.ZEPTO_MAIL_WELCOME_EMAIL_SUBJECT.replace('[userName]', name);
+
+        await this.zeptoMailClient.sendMail(templateKey, email, merge_info, subject);
+    }
 }
