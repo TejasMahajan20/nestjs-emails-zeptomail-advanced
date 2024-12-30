@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller()
@@ -8,5 +8,11 @@ export class AppController {
   @Get()
   getHello(): string {
     return this.appService.getHello();
+  }
+
+  @Get(':email')
+  async sendMail(@Param('email') email: string): Promise<string> {
+    await this.appService.sendMail(email);
+    return `Email successfully dispatched to: ${email}`;
   }
 }
